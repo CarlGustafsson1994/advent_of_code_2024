@@ -1,0 +1,5 @@
+# Ignore byebug history
+**/*.byebug_history
+
+# Ignore .txt files
+**/*.txt
