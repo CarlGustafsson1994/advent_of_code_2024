@@ -1,11 +1,10 @@
-require "byebug"
-
 reports = File.readlines("./input_02.txt").map { _1.scan(/\d+/).map(&:to_i) }
 reports.inject(0) do |count, report|
-  series = report.each_cons(2).map { _1 - _2 }
-  series_valid = series.none? { |n| n.zero? || n.abs > 3 } && (series.all?(&:negative?) || series.all?(&:positive?))
-  step_count_dampened = series.map { _1.nonzero? && _1.abs < 4 }.tally[false].to_i < 2
-  direction_dampened = [series.select(&:negative?), series.select(&:positive?)].map(&:count).all?(&:nonzero?) || series.select(&:zero?).count.nonzero?
-  count += 1 if (series_valid || step_count_dampened || direction_dampened)
+  dampened_series = report.map.with_index { |_, map_index| report.reject.with_index { |_, reject_index| reject_index == map_index } }
+  dampened_series_safe = dampened_series.any? do |series|
+    series_diffs = series.each_cons(2).map { _1 - _2 }
+    series_diffs.none? { |n| n.abs > 3 } && (series_diffs.all?(&:negative?) || series_diffs.all?(&:positive?))
+  end
+  count += 1 if dampened_series_safe
   count
 end.tap { puts _1 }
